@@ -5,8 +5,6 @@ main() {
 	GOARCH=$(detect_goarch)
 	GOOS=$(detect_goos)
 
-	echo "Shoutout to NextDNS team for an awesome package that we could derive from"
-
 	export dnsadblock_INSTALLER=1
 
 	log_info "OS: $OS"
@@ -18,7 +16,7 @@ main() {
 		exit 1
 	fi
 
-	dnsadblock_BIN=$(bin_location)
+	DNSADBLOCK_BIN=$(bin_location)
 	LATEST_RELEASE=$(get_release)
 
 	while true; do
@@ -85,7 +83,16 @@ configure() {
 	args=""
 	add_arg() {
 		log_debug "Add arg -$1=$2"
-		args="$args -$1=$2"
+		multiline=$(is_multiline "$2")
+		if [ "$multiline" -eq "1" ]; then
+			log_debug "Multiline response detected for arg: ${1}; will create multiple copies"
+			for item in $2
+			do
+				args="$args -$1=$item"
+			done
+		else
+			args="$args -$1=$2"
+		fi
 	}
 	add_arg_bool_ask() {
 		arg=$1
@@ -100,9 +107,6 @@ configure() {
 	add_arg config "$(get_config_id)"
 	doc "Sending your devices name lets you filter analytics and logs by device."
 	add_arg_bool_ask report-client-info 'Report device name?' true
-	doc "Only use DNS servers located in jurisdictions with strong privacy laws."
-	doc "This may increase latency."
-	add_arg_bool_ask hardened-privacy 'Enable hardened privacy mode (may increase latency)?'
 	case $(guess_host_type) in
 	router)
 		add_arg setup-router true
@@ -120,11 +124,13 @@ configure() {
 	doc "If you say no here, you will have to manually configure DNS to 127.0.0.1."
 	add_arg_bool_ask auto-activate 'Automatically configure host DNS on daemon startup?' true
 	# shellcheck disable=SC2086
-	asroot "$dnsadblock_BIN" install $args
+
+	doc "executing $DNSADBLOCK_BIN install $args"
+	asroot "$DNSADBLOCK_BIN" install $args
 }
 
 install_bin() {
-	bin_path=$dnsadblock_BIN
+	bin_path=$DNSADBLOCK_BIN
 	if [ "$1" ]; then
 		bin_path=$1
 	fi
@@ -137,22 +143,22 @@ install_bin() {
 }
 
 upgrade_bin() {
-	tmp=$dnsadblock_BIN.tmp
+	tmp=$DNSADBLOCK_BIN.tmp
 	if install_bin "$tmp"; then
-		asroot "$dnsadblock_BIN" uninstall
-		mv "$tmp" "$dnsadblock_BIN"
-		asroot "$dnsadblock_BIN" install
+		asroot "$DNSADBLOCK_BIN" uninstall
+		mv "$tmp" "$DNSADBLOCK_BIN"
+		asroot "$DNSADBLOCK_BIN" install
 	fi
 	rm -rf "$tmp"
 }
 
 uninstall_bin() {
-	asroot "$dnsadblock_BIN" uninstall
-	asroot rm -f "$dnsadblock_BIN"
+	asroot "$DNSADBLOCK_BIN" uninstall
+	asroot rm -f "$DNSADBLOCK_BIN"
 }
 
 install_rpm() {
-	sudo curl -s https://dnsadblock.com/yum.repo -o /etc/yum.repos.d/dnsadblock.repo &&
+	sudo curl -s https://api.dnsadblock.com/yum.repo -o /etc/yum.repos.d/dnsadblock.repo &&
 		sudo yum install -y dnsadblock
 }
 
@@ -167,8 +173,8 @@ uninstall_rpm() {
 install_deb() {
 	# Fallback on curl, some debian based distrib don't have wget while debian
 	# doesn't have curl by default.
-	(wget -qO - https://dnsadblock.com/repo.gpg || curl -sfL https://dnsadblock.com/repo.gpg) | sudo apt-key add - &&
-		sudo sh -c 'echo "deb https://dnsadblock.com/repo/deb stable main" > /etc/apt/sources.list.d/dnsadblock.list' &&
+	(wget -qO - https://api.dnsadblock.com/repo.gpg || curl -sfL https://api.dnsadblock.com/repo.gpg) | sudo apt-key add - &&
+		sudo sh -c 'echo "deb https://dl.bintray.com/dnsadblock/deb stable main" > /etc/apt/sources.list.d/dnsadblock.list' &&
 		(test "$OS" = "debian" && sudo apt install apt-transport-https || true) &&
 		sudo apt update &&
 		sudo apt install -y dnsadblock
@@ -199,7 +205,7 @@ uninstall_arch() {
 install_merlin_path() {
 	# Add next to Merlin's path
 	mkdir -p /tmp/opt/sbin
-	ln -sf "$dnsadblock_BIN" /tmp/opt/sbin/dnsadblock
+	ln -sf "$DNSADBLOCK_BIN" /tmp/opt/sbin/dnsadblock
 }
 
 install_merlin() {
@@ -279,7 +285,7 @@ install_brew() {
 
 upgrade_brew() {
 	silent_exec brew upgrade dnsadblock/tap/dnsadblock
-	sudo "$dnsadblock_BIN" install
+	sudo "$DNSADBLOCK_BIN" install
 }
 
 uninstall_brew() {
@@ -321,7 +327,7 @@ install_type() {
 	centos | fedora | rhel)
 		echo "rpm"
 		;;
-	debian | ubuntu | raspbian | linuxmint)
+	debian | ubuntu | elementary | raspbian | linuxmint)
 		echo "deb"
 		;;
 	arch | manjaro)
@@ -370,7 +376,7 @@ install_type() {
 }
 
 get_config() {
-	"$dnsadblock_BIN" config | grep -E "^$1 " | cut -d' ' -f 2
+	"$DNSADBLOCK_BIN" config | grep -E "^$1 " | cut -d' ' -f 2
 }
 
 get_config_bool() {
@@ -389,22 +395,24 @@ get_config_id() {
 		default=
 		prev_id=$(get_config config)
 		if [ "$prev_id" ]; then
-			log_debug "Previous config ID: $prev_id"
-			default=" (default=$prev_id)"
+			prev_id_oneline=$(echo "${prev_id}" | tr '\n' ' ')
+			log_debug "Previous config ID: $prev_id_oneline"
+			default=" (default=$prev_id_oneline)"
 		fi
 		print "dnsadblock Configuration ID%s: " "$default"
 		read -r id
 		if [ -z "$id" ]; then
 			id=$prev_id
 		fi
-		if echo "$id" | grep -qE '^[0-9a-f]{6}$'; then
+		if echo "$id" | grep -qE '^[0-9a-z]{8}$'; then
 			CONFIG_ID=$id
 			break
 		else
-			print "Invalid configuration ID."
+			print "Invalid connection ID."
 			print
-			print "ID format is 6 alphanumerical lowercase characters (example: 123abc)."
-			print "Your ID can be found on the Setup tab of https://my.dnsadblock.com."
+			print "ID format is 9 alphanumerical characters."
+			print "Your ID can be found on the connections page at:"
+			print "	https://dnsadblock.com/app/connections"
 			print
 		fi
 	done
@@ -651,7 +659,7 @@ detect_os() {
 				echo "$ID"
 			)
 			case $dist in
-			debian | ubuntu | raspbian | centos | fedora | rhel | arch | manjaro | openwrt | clear-linux-os | linuxmint)
+			debian | ubuntu | elementary | raspbian | centos | fedora | rhel | arch | manjaro | openwrt | clear-linux-os | linuxmint)
 				echo "$dist"
 				return 0
 				;;
@@ -733,7 +741,7 @@ silent_exec() {
 
 bin_location() {
 	case $OS in
-	centos | fedora | rhel | debian | ubuntu | raspbian | arch | manjaro | openwrt | clear-linux-os | linuxmint)
+	centos | fedora | rhel | debian | ubuntu | elementary | raspbian | arch | manjaro | openwrt | clear-linux-os | linuxmint)
 		echo "/usr/bin/dnsadblock"
 		;;
 	darwin | synology)
@@ -755,8 +763,8 @@ bin_location() {
 }
 
 get_current_release() {
-	if [ -x "$dnsadblock_BIN" ]; then
-		$dnsadblock_BIN version | cut -d' ' -f 3
+	if [ -x "$DNSADBLOCK_BIN" ]; then
+		$DNSADBLOCK_BIN version | cut -d' ' -f 3
 	fi
 }
 
@@ -801,6 +809,19 @@ openssl_get() {
 	host=${host%$path}  # dom.com/path -> dom.com
 	printf "GET %s HTTP/1.0\nHost: %s\nUser-Agent: curl\n\n" "$path" "$host" |
 		openssl s_client -quiet -connect "$host:443" 2>/dev/null
+}
+
+lines_num(){
+	echo "$1" | wc -l
+}
+
+is_multiline(){
+	lines=$(lines_num "$1")
+	if [ $lines -gt 1 ]; then
+		echo "1"
+	else
+		echo "0"
+	fi
 }
 
 main
