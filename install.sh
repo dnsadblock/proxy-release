@@ -129,7 +129,7 @@ install_bin() {
 		bin_path=$1
 	fi
 	log_debug "Installing $LATEST_RELEASE binary for $GOOS/$GOARCH to $bin_path"
-	url="https://github.com/dnsadblock/dnsadblock/releases/download/v${LATEST_RELEASE}/dnsadblock_${LATEST_RELEASE}_${GOOS}_${GOARCH}.tar.gz"
+	url="https://github.com/dnsadblock/proxy-release/releases/download/v${LATEST_RELEASE}/dnsadblock_${LATEST_RELEASE}_${GOOS}_${GOARCH}.tar.gz"
 	log_debug "Downloading $url"
 	mkdir -p "$(dirname "$bin_path")" &&
 		curl -sL "$url" | asroot sh -c "tar Ozxf - dnsadblock > \"$bin_path\"" &&
@@ -768,7 +768,7 @@ get_release() {
 		if [ -z "$(command -v curl >/dev/null 2>&1)" ]; then
 			curl="openssl_get"
 		fi
-		$curl "https://api.github.com/repos/dnsadblock/dnsadblock/releases/latest" |
+		$curl "https://api.github.com/repos/dnsadblock/proxy-release/releases/latest" |
 			grep '"tag_name":' |
 			sed -E 's/.*"([^"]+)".*/\1/' |
 			sed -e 's/^v//'
