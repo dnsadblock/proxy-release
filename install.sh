@@ -128,7 +128,7 @@ install_bin() {
 		bin_path=$1
 	fi
 	log_debug "Installing $LATEST_RELEASE binary for $GOOS/$GOARCH to $bin_path"
-	url="https://github.com/dnsadblock/proxy-release/releases/download/v${LATEST_RELEASE}/proxy_${LATEST_RELEASE}_${GOOS}_${GOARCH}.tar.gz"
+	url="https://github.com/dnsadblock/proxy-release/releases/download/v${LATEST_RELEASE}/dnsadblock_${LATEST_RELEASE}_${GOOS}_${GOARCH}.tar.gz"
 	log_debug "Downloading $url"
 	mkdir -p "$(dirname "$bin_path")" &&
 		curl -sL "$url" | asroot sh -c "tar Ozxf - dnsadblock > \"$bin_path\"" &&
