@@ -734,7 +734,7 @@ silent_exec() {
 
 bin_location() {
 	case $OS in
-	centos | edgeos |fedora | rhel | debian | ubuntu | elementary | raspbian | arch | manjaro | openwrt | clear-linux-os | linuxmint)
+	centos | fedora | rhel | debian | ubuntu | elementary | raspbian | arch | manjaro | openwrt | clear-linux-os | linuxmint)
 		echo "/usr/bin/dnsadblock"
 		;;
 	darwin | synology)
@@ -745,6 +745,9 @@ bin_location() {
 		;;
 	freebsd | pfsense)
 		echo "/usr/local/sbin/dnsadblock"
+		;;
+	edgeos)
+		echo "/config/dnsadblock/dnsadblock"
 		;;
 	*)
 		log_error "Unknown bin location for $OS"
