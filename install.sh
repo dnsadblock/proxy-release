@@ -747,7 +747,7 @@ bin_location() {
 		echo "/usr/local/sbin/dnsadblock"
 		;;
 	edgeos)
-		echo "/config/dnsadblock/dnsadblock"
+		echo "/usr/sbin/dnsadblock"
 		;;
 	*)
 		log_error "Unknown bin location for $OS"
