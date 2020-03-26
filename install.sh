@@ -250,10 +250,10 @@ install_ddwrt() {
 		log_info " 2. Scroll down until you see JFFS2 Support section."
 		log_info " 3. Click Enable JFFS."
 		log_info " 4. Click Save."
-		log_info " 5. Wait couple seconds, then click Apply."
+		log_info " 5. Wait a couple of seconds, then click Apply."
 		log_info " 6. Wait again. Go back to the Enable JFFS section, and enable Clean JFFS."
 		log_info " 7. Do not click Save. Click Apply instead."
-		log_info " 8. Wait till you get the web-GUI back, then disable Clean JFFS again."
+		log_info " 8. Wait untill you get the web-GUI back, then disable Clean JFFS again."
 		log_info " 9. Click Save."
 		log_info "10. Relaunch this installer."
 		exit 1
@@ -335,6 +335,7 @@ install_type() {
 			# No opkg support before 19.07.0-rc2
 			echo "bin"
 		else
+			echo "bin"
 			echo "openwrt"
 		fi
 		;;
