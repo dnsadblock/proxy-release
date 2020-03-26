@@ -336,7 +336,7 @@ install_type() {
 			echo "bin"
 		else
 			echo "bin"
-			echo "openwrt"
+			# echo "openwrt"
 		fi
 		;;
 	asuswrt-merlin)
