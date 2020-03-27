@@ -9,7 +9,6 @@ jobs:
             vmImage: 'Ubuntu-16.04'
         steps:
             -   bash: |
-                    git clone
                     sh ./arch/bin/aur.sh
                 workingDirectory: $(Build.SourcesDirectory)
                 env:
