@@ -11,7 +11,7 @@ jobs:
             -   task: InstallSSHKey@0
                 inputs:
                     knownHostsEntry: 'aur.archlinux.org'
-                    sshPublicKey: 'arch-aur-private-key'
+                    sshPublicKey: 'ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDRv8LonDCXYzbGmy4hNlDAnkHS1PvcAcQIIQhxuKMPYY8Lw2nkIEwQa+uVGgW4ewq15lIe0DZ+ON3SgPit+5rSWyjYqtRA/u4eKH6VRoi6Rhj1wdqvkHZIFGPU9rCLeA6KC7rjJhpO4L1dV5BtR0E0byEauHzmuaV/dUxUeTxGyUL6wSoa+zdzxZKtKq8d1WGJ6IcvPDVeE2JXohdDPi021k8leBPy/jaGjkmNF6Y26hgXMc+IxiWcZR1DKFH2IbFIR3nJtFiwKND9dsQ514ktLUDvbIjL+s5FZda1nXqJ/VSi8uG1OH11q491rCvNOUvoR3xEugoVFaTWfXLDNkYx ciokan@ciokan'
                     sshKeySecureFile: 'arch-aur-private-key'
 
             -   bash: |
