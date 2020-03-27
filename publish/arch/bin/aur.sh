@@ -54,7 +54,7 @@ EOL
 	cd "${PARENT_PATH}/dnsadblock"
 
 	# do not commit unless we have the required files present
-	[ -f "$PARENT_PATH/dnsadblock/.SRCINFO" ] && [ -f "$PARENT_PATH/dnsadblock/PKGBUILD" ] {
+	[ -f "$PARENT_PATH/dnsadblock/.SRCINFO" ] && [ -f "$PARENT_PATH/dnsadblock/PKGBUILD" ] && {
 		git commit -am "Release for version: v${GIT_TAG}"
 		git push origin master
 	}
