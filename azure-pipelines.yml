@@ -15,6 +15,7 @@ jobs:
                     sshKeySecureFile: 'arch-aur-private-key'
 
             -   bash: |
+                    ssh-keyscan aur.archlinux.org > ~/.ssh/known_hosts
                     chmod +x $(Build.SourcesDirectory)/publish/arch/bin/aur.sh
                     $(Build.SourcesDirectory)/publish/arch/bin/aur.sh
                 workingDirectory: $(Build.SourcesDirectory)
