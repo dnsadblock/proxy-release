@@ -1,0 +1,16 @@
+trigger:
+    tags:
+        include:
+            - v*
+
+jobs:
+    -   job: PublishAURJob
+        pool:
+            vmImage: 'Ubuntu-16.04'
+        steps:
+            -   bash: |
+                    git clone
+                    sh ./arch/bin/aur.sh
+                workingDirectory: $(Build.SourcesDirectory)
+                env:
+                    PROJECT_DIR: $(Build.SourcesDirectory)

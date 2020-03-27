@@ -404,7 +404,7 @@ get_config_id() {
 		else
 			print "Invalid connection ID."
 			print
-			print "ID format is 9 alphanumerical characters."
+			print "ID format is 8 alphanumerical characters."
 			print "Your ID can be found on the connections page at:"
 			print "	https://dnsadblock.com/app/connections"
 			print
