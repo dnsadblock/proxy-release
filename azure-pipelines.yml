@@ -8,6 +8,12 @@ jobs:
         pool:
             vmImage: 'Ubuntu-16.04'
         steps:
+            -   task: InstallSSHKey@0
+                inputs:
+                    knownHostsEntry: 'aur.archlinux.org'
+                    sshPublicKey: 'arch-aur-private-key'
+                    sshKeySecureFile: 'arch-aur-private-key'
+
             -   bash: |
                     chmod +x $(Build.SourcesDirectory)/publish/arch/bin/aur.sh
                     $(Build.SourcesDirectory)/publish/arch/bin/aur.sh
