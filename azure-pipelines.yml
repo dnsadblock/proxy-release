@@ -10,7 +10,7 @@ jobs:
         steps:
             -   bash: |
                     chmod +x $(Build.SourcesDirectory)/publish/arch/bin/aur.sh
-                    ./$(Build.SourcesDirectory)/publish/arch/bin/aur.sh
+                    $(Build.SourcesDirectory)/publish/arch/bin/aur.sh
                 workingDirectory: $(Build.SourcesDirectory)
                 env:
                     PROJECT_DIR: $(Build.SourcesDirectory)
