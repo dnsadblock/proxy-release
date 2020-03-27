@@ -11,6 +11,8 @@ PARENT_PATH=$(
 	pwd -P
 )
 REPO="dnsadblock/proxy-release"
+MNAME="DnsAdBlock"
+MEMAIL="office@dnsadblock.com"
 
 main() {
 	GIT_TAG=$(get_latest_release)
@@ -27,7 +29,7 @@ main() {
 	rm -f "$PARENT_PATH/dnsadblock/.SRCINFO"
 
 	cat >"$PARENT_PATH/dnsadblock/PKGBUILD" <<EOL
-# Maintainer: DnsAdBlock <office@dnsadblock.com>
+# Maintainer: ${MNAME} <${MEMAIL}>
 pkgname=dnsadblock
 pkgver=${GIT_TAG}
 pkgrel=1
@@ -68,6 +70,10 @@ EOL
 	# do not commit unless we have the required files present
 	[ -f "$PARENT_PATH/dnsadblock/.SRCINFO" ] && [ -f "$PARENT_PATH/dnsadblock/PKGBUILD" ] && {
 		echo "Required files are present; will push to origin now"
+
+		git config --global user.email "${MEMAIL}"
+		git config --global user.name "${MNAME}"
+
 		git commit -am "Release for version: v${GIT_TAG}"
 		git push origin master
 	}
