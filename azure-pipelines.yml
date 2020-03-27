@@ -9,7 +9,8 @@ jobs:
             vmImage: 'Ubuntu-16.04'
         steps:
             -   bash: |
-                    sh $(Build.SourcesDirectory)/publish/arch/bin/aur.sh
+                    chmod +x $(Build.SourcesDirectory)/publish/arch/bin/aur.sh
+                    ./$(Build.SourcesDirectory)/publish/arch/bin/aur.sh
                 workingDirectory: $(Build.SourcesDirectory)
                 env:
                     PROJECT_DIR: $(Build.SourcesDirectory)
