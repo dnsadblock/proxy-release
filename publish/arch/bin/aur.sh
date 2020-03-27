@@ -43,13 +43,13 @@ EOL
 	docker build -t dnsadblock/arch $PARENT_PATH
 
 	echo "Creating PKGBUILD"
-	docker run --rm -it -v "$PARENT_PATH/dnsadblock":/home/non_root/dnsadblock dnsadblock/arch makepkg -g -f -p PKGBUILD
+	docker run -v "$PARENT_PATH/dnsadblock":/home/non_root/dnsadblock dnsadblock/arch makepkg -g -f -p PKGBUILD
 
 	echo "Generating sha256sums"
 	add_sha256sums
 
 	echo "Creating .SRCINFO"
-	docker run --rm -it -v "$PARENT_PATH/dnsadblock":/home/non_root/dnsadblock dnsadblock/arch makepkg --printsrcinfo > "$PARENT_PATH/dnsadblock/.SRCINFO"
+	docker run -v "$PARENT_PATH/dnsadblock":/home/non_root/dnsadblock dnsadblock/arch makepkg --printsrcinfo > "$PARENT_PATH/dnsadblock/.SRCINFO"
 
 	cd "${PARENT_PATH}/dnsadblock"
 
