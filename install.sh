@@ -163,6 +163,25 @@ uninstall_rpm() {
 	sudo yum uninstall -y dnsadblock
 }
 
+install_zypper() {
+    sudo zypper repos | grep -q dnsadblock >/dev/null && 
+        echo "Repository dnsadblock already exists. Skipping adding repository..." || sudo zypper ar -f https://dl.bintray.com/dnsadblock/rpm/ dnsadblock 
+    sudo zypper refresh && sudo zypper in -y dnsadblock
+}
+
+upgrade_zypper() {
+    sudo zypper up dnsadblock
+}
+
+uninstall_zypper() {
+    sudo zypper remove -y dnsadblock
+    case $(ask_bool 'Do you want to remove the repository from the repositories list?' true) in
+            true)
+                sudo zypper removerepo dnsadblock
+                ;;
+        esac
+}
+
 install_deb() {
 	# Fallback on curl, some debian based distrib don't have wget while debian
 	# doesn't have curl by default.
