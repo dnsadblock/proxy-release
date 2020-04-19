@@ -339,7 +339,7 @@ install_type() {
 	centos | fedora | rhel)
 		echo "rpm"
 		;;
-	debian | ubuntu | elementary | raspbian | linuxmint)
+	debian|ubuntu|elementary|raspbian|linuxmint|pop)
 		echo "deb"
 		;;
 	arch | manjaro)
@@ -672,7 +672,7 @@ detect_os() {
 				echo "$ID"
 			)
 			case $dist in
-			debian|ubuntu|elementary|raspbian|centos|fedora|rhel|arch|manjaro|openwrt|clear-linux-os|linuxmint|solus)
+			debian|ubuntu|elementary|raspbian|centos|fedora|rhel|arch|manjaro|openwrt|clear-linux-os|linuxmint|solus|pop)
 				echo "$dist"
 				return 0
 				;;
@@ -754,7 +754,7 @@ silent_exec() {
 
 bin_location() {
 	case $OS in
-	centos|fedora|rhel|debian|ubuntu|elementary|raspbian|arch|manjaro|openwrt|clear-linux-os|linuxmint|solus)
+	centos|fedora|rhel|debian|ubuntu|elementary|raspbian|arch|manjaro|openwrt|clear-linux-os|linuxmint|solus|pop)
 		echo "/usr/bin/dnsadblock"
 		;;
 	darwin | synology)
