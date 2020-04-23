@@ -51,8 +51,13 @@ install() {
 	if type=$(install_type); then
 		log_info "Installing dnsadblock..."
 		log_debug "Using $type install type"
-		"install_$type" &&
-			configure
+		if "install_$type"; then
+			if [ ! -x "$DNSADBLOCK_BIN" ]; then
+				log_error "Installation failed: binary not installed in $DNSADBLOCK_BIN"
+                		return 1
+            		fi
+            		configure
+        	fi
 	else
 		return $?
 	fi
