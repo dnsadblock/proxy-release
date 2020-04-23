@@ -754,16 +754,19 @@ silent_exec() {
 
 bin_location() {
 	case $OS in
-	centos|fedora|rhel|debian|ubuntu|elementary|raspbian|arch|manjaro|openwrt|clear-linux-os|linuxmint|solus|pop)
+	centos|fedora|rhel|debian|ubuntu|elementary|raspbian|arch|manjaro|clear-linux-os|linuxmint|opensuse-tumbleweed|opensuse|solus|pop)
 		echo "/usr/bin/dnsadblock"
 		;;
-	darwin | synology)
+	openwrt)
+        	echo "/usr/sbin/dnsadblock"
+        	;;
+	darwin|synology)
 		echo "/usr/local/bin/dnsadblock"
 		;;
-	asuswrt-merlin | ddwrt)
+	asuswrt-merlin|ddwrt)
 		echo "/jffs/dnsadblock/dnsadblock"
 		;;
-	freebsd | pfsense)
+	freebsd|pfsense)
 		echo "/usr/local/sbin/dnsadblock"
 		;;
 	edgeos)
