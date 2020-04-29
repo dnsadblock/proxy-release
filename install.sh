@@ -825,8 +825,16 @@ get_release() {
 		fi
 		$curl "https://api.github.com/repos/dnsadblock/proxy-release/releases/latest" |
 			grep '"tag_name":' |
-			sed -E 's/.*"([^"]+)".*/\1/' |
+			esed 's/.*"([^"]+)".*/\1/' |
 			sed -e 's/^v//'
+	fi
+}
+
+esed() {
+	if (echo | sed -E '' >/dev/null 2>&1); then
+		sed -E "$@"
+	else
+		sed -r "$@"
 	fi
 }
 
