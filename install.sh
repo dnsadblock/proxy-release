@@ -162,7 +162,7 @@ install_rpm() {
 }
 
 upgrade_rpm() {
-	sudo yum upgrade -y dnsadblock
+	sudo yum update -y dnsadblock
 }
 
 uninstall_rpm() {
@@ -199,6 +199,7 @@ install_deb() {
 }
 
 upgrade_deb() {
+	sudo apt update &&
 	sudo apt remove -y dnsadblock
 }
 
