@@ -144,10 +144,11 @@ upgrade_bin() {
 	tmp=$DNSADBLOCK_BIN.tmp
 	if install_bin "$tmp"; then
 		asroot "$DNSADBLOCK_BIN" uninstall
-		mv "$tmp" "$DNSADBLOCK_BIN"
+		asroot mv "$tmp" "$DNSADBLOCK_BIN"
 		asroot "$DNSADBLOCK_BIN" install
 	fi
-	rm -rf "$tmp"
+	log_debug "Removing spurious temporary install file"
+	asroot rm -rf "$tmp"
 }
 
 uninstall_bin() {
@@ -339,6 +340,21 @@ uninstall_pfsense() {
 	uninstall_bin
 }
 
+install_opnsense() {
+	# TODO: port install + UI
+	install_bin
+}
+
+upgrade_opnsense() {
+	# TODO: port upgrade
+	upgrade_bin
+}
+
+uninstall_opnsense() {
+	# TODO: port uninstall
+	uninstall_bin
+}
+
 install_type() {
 	case $OS in
 	centos | fedora | rhel)
@@ -385,6 +401,9 @@ install_type() {
 		;;
 	pfsense)
 		echo "pfsense"
+		;;
+	opnsense)
+		echo "opnsense"
 		;;
 	*)
 		log_error "Unsupported installation for $(detect_os)"
@@ -706,6 +725,13 @@ detect_os() {
 				;;
 			esac
 		fi
+		if [ -x /usr/local/sbin/opnsense-version ]; then
+			case $(/usr/local/sbin/opnsense-version -N) in
+			OPNsense)
+				echo "opnsense"; return 0
+				;;
+			esac
+		fi
 		echo "freebsd"
 		return 0
 		;;
@@ -721,7 +747,7 @@ detect_os() {
 
 guess_host_type() {
 	case $OS in
-	pfsense | openwrt | asuswrt-merlin | edgeos | ddwrt | synology)
+	pfsense | opnsense | openwrt | asuswrt-merlin | edgeos | ddwrt | synology)
 		echo "router"
 		;;
 	darwin)
@@ -771,7 +797,7 @@ bin_location() {
 	asuswrt-merlin|ddwrt)
 		echo "/jffs/dnsadblock/dnsadblock"
 		;;
-	freebsd|pfsense)
+	freebsd|pfsense|opnsense|netbsd|openbsd)
 		echo "/usr/local/sbin/dnsadblock"
 		;;
 	edgeos)
