@@ -472,8 +472,9 @@ log_error() {
 }
 
 print() {
-	# shellcheck disable=SC2059
-	printf "$@" >&2
+    format=$1; shift
+    # shellcheck disable=SC2059
+    printf "$format" "$@" >&2
 }
 
 doc() {
