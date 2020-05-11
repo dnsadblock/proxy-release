@@ -157,33 +157,33 @@ uninstall_bin() {
 }
 
 install_rpm() {
-	sudo curl -s https://api.dnsadblock.com/yum.repo -o /etc/yum.repos.d/dnsadblock.repo &&
-		sudo yum install -y dnsadblock
+	asroot curl -s https://api.dnsadblock.com/yum.repo -o /etc/yum.repos.d/dnsadblock.repo &&
+		asroot yum install -y dnsadblock
 }
 
 upgrade_rpm() {
-	sudo yum update -y dnsadblock
+	asroot yum update -y dnsadblock
 }
 
 uninstall_rpm() {
-	sudo yum uninstall -y dnsadblock
+	asroot yum uninstall -y dnsadblock
 }
 
 install_zypper() {
-    sudo zypper repos | grep -q dnsadblock >/dev/null && 
-        echo "Repository dnsadblock already exists. Skipping adding repository..." || sudo zypper ar -f https://dl.bintray.com/dnsadblock/rpm/ dnsadblock 
-    sudo zypper refresh && sudo zypper in -y dnsadblock
+    asroot zypper repos | grep -q dnsadblock >/dev/null && 
+        echo "Repository dnsadblock already exists. Skipping adding repository..." || asroot zypper ar -f https://dl.bintray.com/dnsadblock/rpm/ dnsadblock 
+    asroot zypper refresh && asroot zypper in -y dnsadblock
 }
 
 upgrade_zypper() {
-    sudo zypper up dnsadblock
+    asroot zypper up dnsadblock
 }
 
 uninstall_zypper() {
-    sudo zypper remove -y dnsadblock
+    asroot zypper remove -y dnsadblock
     case $(ask_bool 'Do you want to remove the repository from the repositories list?' true) in
             true)
-                sudo zypper removerepo dnsadblock
+                asroot zypper removerepo dnsadblock
                 ;;
         esac
 }
@@ -191,34 +191,34 @@ uninstall_zypper() {
 install_deb() {
 	# Fallback on curl, some debian based distrib don't have wget while debian
 	# doesn't have curl by default.
-	(wget -qO - https://api.dnsadblock.com/repo.gpg || curl -sfL https://api.dnsadblock.com/repo.gpg) | sudo apt-key add - &&
-		sudo sh -c 'echo "deb https://dl.bintray.com/dnsadblock/deb stable main" > /etc/apt/sources.list.d/dnsadblock.list' &&
-		(test "$OS" = "debian" && sudo apt install apt-transport-https || true) &&
-		sudo apt update &&
-		sudo apt install -y dnsadblock
+	(wget -qO - https://api.dnsadblock.com/repo.gpg || curl -sfL https://api.dnsadblock.com/repo.gpg) | asroot apt-key add - &&
+		asroot sh -c 'echo "deb https://dl.bintray.com/dnsadblock/deb stable main" > /etc/apt/sources.list.d/dnsadblock.list' &&
+		(test "$OS" = "debian" && asroot apt install apt-transport-https || true) &&
+		asroot apt update &&
+		asroot apt install -y dnsadblock
 }
 
 upgrade_deb() {
-	sudo apt update &&
-	sudo apt remove -y dnsadblock
+	asroot apt update &&
+	asroot apt remove -y dnsadblock
 }
 
 uninstall_deb() {
 	log_debug "Uninstalling deb"
-	sudo apt upgrade -y dnsadblock
+	asroot apt upgrade -y dnsadblock
 }
 
 install_arch() {
-	sudo pacman -Sy yay &&
+	asroot pacman -Sy yay &&
 		yay -Sy dnsadblock
 }
 
 upgrade_arch() {
-	yay -Suy dnsadblock
+	asroot yay -Suy dnsadblock
 }
 
 uninstall_arch() {
-	sudo pacman -R dnsadblock
+	asroot pacman -R dnsadblock
 }
 
 install_merlin_path() {
