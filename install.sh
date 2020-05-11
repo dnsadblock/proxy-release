@@ -193,19 +193,19 @@ install_deb() {
 	# doesn't have curl by default.
 	(wget -qO - https://api.dnsadblock.com/repo.gpg || curl -sfL https://api.dnsadblock.com/repo.gpg) | asroot apt-key add - &&
 		asroot sh -c 'echo "deb https://dl.bintray.com/dnsadblock/deb stable main" > /etc/apt/sources.list.d/dnsadblock.list' &&
-		(test "$OS" = "debian" && asroot apt install apt-transport-https || true) &&
-		asroot apt update &&
-		asroot apt install -y dnsadblock
+		(test "$OS" = "debian" && asroot apt-get install apt-transport-https || true) &&
+		asroot apt-get update &&
+		asroot apt-get install -y dnsadblock
 }
 
 upgrade_deb() {
-	asroot apt update &&
-	asroot apt remove -y dnsadblock
+	asroot apt-get update &&
+		asroot apt-get remove -y dnsadblock
 }
 
 uninstall_deb() {
 	log_debug "Uninstalling deb"
-	asroot apt upgrade -y dnsadblock
+	asroot apt-get upgrade -y dnsadblock
 }
 
 install_arch() {
