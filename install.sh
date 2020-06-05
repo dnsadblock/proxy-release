@@ -834,7 +834,7 @@ get_release() {
 		echo "$dnsadblock_VERSION"
 	else
 		curl="curl -s"
-		if [ -z "$(command -v curl 2>&1)" ]; then
+		if [ -z "$(command -v curl 2>/dev/null)" ]; then
 			curl="openssl_get"
 		fi
 		$curl "https://api.github.com/repos/dnsadblock/proxy-release/releases/latest" |
