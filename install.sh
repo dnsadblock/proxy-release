@@ -395,7 +395,7 @@ install_type() {
 	asuswrt-merlin)
 		echo "merlin"
 		;;
-	edgeos|synology|clear-linux-os|solus)
+	edgeos|synology|clear-linux-os|solus|openbsd|netbsd|overthebox)
 		echo "bin"
 		;;
 	ddwrt)
@@ -710,7 +710,7 @@ detect_os() {
 				echo "$ID"
 			)
 			case $dist in
-			debian|ubuntu|elementary|raspbian|centos|fedora|rhel|arch|manjaro|openwrt|clear-linux-os|linuxmint|solus|pop)
+			debian|ubuntu|elementary|raspbian|centos|fedora|rhel|arch|manjaro|openwrt|clear-linux-os|linuxmint|opensuse-tumbleweed|opensuse|solus|pop|neon|overthebox)
 				echo "$dist"
 				return 0
 				;;
@@ -802,7 +802,7 @@ bin_location() {
 	centos|fedora|rhel|debian|ubuntu|elementary|raspbian|arch|manjaro|clear-linux-os|linuxmint|opensuse-tumbleweed|opensuse|solus|pop)
 		echo "/usr/bin/dnsadblock"
 		;;
-	openwrt)
+	openwrt|overthebox)
         	echo "/usr/sbin/dnsadblock"
         	;;
 	darwin|synology)
