@@ -4,20 +4,21 @@ main() {
 	OS=$(detect_os)
 	GOARCH=$(detect_goarch)
 	GOOS=$(detect_goos)
+	DNSADBLOCK_BIN=$(bin_location)
+        LATEST_RELEASE=$(get_release)
 
 	export dnsadblock_INSTALLER=1
 
 	log_info "OS: $OS"
 	log_info "GOARCH: $GOARCH"
 	log_info "GOOS: $GOOS"
+	log_info "DNSADBLOCK_BIN: $DNSADBLOCK_BIN"
+   	log_info "LATEST_RELEASE: $LATEST_RELEASE"
 
-	if [ -z "$OS" ] || [ -z "$GOARCH" ] || [ -z "$GOOS" ]; then
+	if [ -z "$OS" ] || [ -z "$GOARCH" ] || [ -z "$GOOS" ] || [ -z "$DNSADBLOCK_BIN" ] || [ -z "$LATEST_RELEASE" ]; then
 		log_error "Cannot detect running environment."
 		exit 1
 	fi
-
-	DNSADBLOCK_BIN=$(bin_location)
-	LATEST_RELEASE=$(get_release)
 
 	while true; do
 		CURRENT_RELEASE=$(get_current_release)
@@ -357,6 +358,9 @@ uninstall_opnsense() {
 }
 
 install_type() {
+	if [ "$FORCE_INSTALL_TYPE" ]; then
+	    echo "$FORCE_INSTALL_TYPE"; return 0
+	fi
 	case $OS in
 	centos | fedora | rhel)
 		echo "rpm"
