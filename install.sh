@@ -58,6 +58,8 @@ install() {
                 		return 1
             		fi
             		configure
+					post_install
+            		exit 0
         	fi
 	else
 		return $?
@@ -104,28 +106,83 @@ configure() {
 		add_arg "$arg" $(ask_bool "$msg" "$default")
 	}
 	add_arg config "$(get_config_id)"
+
 	doc "Sending your devices name lets you filter analytics and logs by device."
 	add_arg_bool_ask report-client-info 'Report device name?' true
+
 	case $(guess_host_type) in
 	router)
 		add_arg setup-router true
 		;;
 	unsure)
-		doc "Accept DNS request from other LAN hosts."
-		case $(ask_bool 'Setup as a router?') in
-		true)
-			add_arg setup-router true
-			;;
-		esac
+		doc "Accept DNS request from other network hosts."
+        if [ "$(get_config_bool setup-router)" = "true" ]; then
+            router_default=true
+        fi
+        if [ "$(ask_bool 'Setup as a router?' $router_default)" = "true" ]; then
+            add_arg setup-router true
+        fi
 		;;
 	esac
+
+
+	doc "Make dnsadblock CLI cache responses. This improves latency and reduces the amount"
+    doc "of queries sent to our servers."
+    if [ "$(guess_host_type)" = "router" ]; then
+        doc "Note that enabling this feature will disable dnsmasq for DNS to avoid double"
+        doc "caching."
+    fi
+    if [ "$(get_config cache-size)" != "0" ]; then
+        cache_default=true
+    fi
+    if [ "$(ask_bool 'Enable caching?' $cache_default)" = "true" ]; then
+        add_arg cache-size "10MB"
+
+        doc "Instant refresh will force low TTL on responses sent to clients so they rely"
+        doc "on CLI DNS cache. This will allow changes on your DnsAdblock config to be applied"
+        doc "on your LAN hosts without having to wait for their cache to expire."
+        if [ "$(get_config max-ttl)" = "5s" ]; then
+            instant_refresh_default=true
+        fi
+        if [ "$(ask_bool 'Enable instant refresh?' $instant_refresh_default)" = "true" ]; then
+            add_arg max-ttl "5s"
+        fi
+    fi
+
+
 	doc "Changes DNS settings of the host automatically when dnsadblock is started."
 	doc "If you say no here, you will have to manually configure DNS to 127.0.0.1."
-	add_arg_bool_ask auto-activate 'Automatically configure host DNS on daemon startup?' true
+	add_arg_bool_ask auto-activate 'Automatically setup local host DNS?' true
 	# shellcheck disable=SC2086
 
 	doc "executing $DNSADBLOCK_BIN install $args"
 	asroot "$DNSADBLOCK_BIN" install $args
+}
+
+post_install() {
+    println
+    println "Congratulations! DnsAdBlock is now installed."
+    println
+    println "To upgrade/uninstall, run this command again and select the approriate option."
+    println
+    println "You can use the dnsadblock command to control the daemon."
+    println "Here is a few important commands to know:"
+    println
+    println "# Start, stop, restart the daemon:"
+    println "dnsadblock start"
+    println "dnsadblock stop"
+    println "dnsadblock restart"
+    println
+    println "# Configure the local host to point to dnsadblock or not:"
+    println "dnsadblock activate"
+    println "dnsadblock deactivate"
+    println
+    println "# Explore daemon logs:"
+    println "dnsadblock log"
+    println
+    println "# For more commands, use:"
+    println "dnsadblock help"
+    println
 }
 
 install_bin() {
@@ -462,12 +519,12 @@ get_config_id() {
 			CONFIG_ID=$id
 			break
 		else
-			print "Invalid connection ID."
-			print
-			print "ID format is 8 alphanumerical characters."
-			print "Your ID can be found on the connections page at:"
-			print "	https://dnsadblock.com/app/connections"
-			print
+			log_error "Invalid connection ID."
+			println
+			println "ID format is 8 alphanumerical characters."
+			println "Your ID can be found on the connections page at:"
+			println "	https://dnsadblock.com/app/connections"
+			println
 		fi
 	done
 	echo "$CONFIG_ID"
@@ -491,6 +548,12 @@ print() {
     format=$1; shift
     # shellcheck disable=SC2059
     printf "$format" "$@" >&2
+}
+
+println() {
+    format=$1; shift
+    # shellcheck disable=SC2059
+    printf "$format\n" "$@" >&2
 }
 
 doc() {
@@ -765,15 +828,15 @@ detect_os() {
 
 guess_host_type() {
 	case $OS in
-	pfsense | opnsense | openwrt | asuswrt-merlin | edgeos | ddwrt | synology)
-		echo "router"
-		;;
-	darwin)
-		echo "workstation"
-		;;
-	*)
-		echo "unsure"
-		;;
+	pfsense|opnsense|openwrt|asuswrt-merlin|edgeos|ddwrt|synology|overthebox)
+        echo "router"
+        ;;
+    darwin)
+        echo "workstation"
+        ;;
+    *)
+        echo "unsure"
+        ;;
 	esac
 }
 
@@ -795,7 +858,7 @@ silent_exec() {
 	else
 		if ! out=$("$@" 2>&1); then
 			rt=$?
-			printf "\033[30;1m%s\033[0m\n" "$out"
+			println "\033[30;1m%s\033[0m" "$out"
 			return $rt
 		fi
 	fi
