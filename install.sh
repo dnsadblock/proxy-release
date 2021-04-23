@@ -482,6 +482,9 @@ install_type() {
 	opnsense)
 		echo "opnsense"
 		;;
+	ubios)
+        echo "bin"
+        ;;
 	*)
 		log_error "Unsupported installation for $(detect_os)"
 		return 1
@@ -786,7 +789,7 @@ detect_os() {
 				echo "$ID"
 			)
 			case $dist in
-			debian|ubuntu|elementary|raspbian|centos|fedora|rhel|arch|manjaro|openwrt|clear-linux-os|linuxmint|opensuse-tumbleweed|opensuse|solus|pop|neon|overthebox)
+			debian|ubuntu|elementary|raspbian|centos|fedora|rhel|arch|manjaro|openwrt|clear-linux-os|linuxmint|opensuse-tumbleweed|opensuse|solus|pop|neon|overthebox|ubios)
 				echo "$dist"
 				return 0
 				;;
@@ -893,6 +896,9 @@ bin_location() {
 	edgeos)
 		echo "/config/dnsadblock/dnsadblock"
 		;;
+	ubios)
+        echo "/data/dnsadblock"
+        ;;
 	*)
 		log_error "Unknown bin location for $OS"
 		;;
