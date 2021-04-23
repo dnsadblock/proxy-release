@@ -416,7 +416,7 @@ uninstall_opnsense() {
 }
 
 ubios_install_source() {
-	echo "deb https://dnsadblock.com/repo/deb stable main" >/tmp/dnsadblock.list
+	echo "deb https://api.dnsadblock.com/repo/deb stable main" >/tmp/dnsadblock.list
 	podman cp /tmp/dnsadblock.list unifi-os:/etc/apt/sources.list.d/dnsadblock.list
 	rm -f /tmp/dnsadblock.list
 }
