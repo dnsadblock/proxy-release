@@ -5,7 +5,7 @@ main() {
 	GOARCH=$(detect_goarch)
 	GOOS=$(detect_goos)
 	DNSADBLOCK_BIN=$(bin_location)
-        LATEST_RELEASE=$(get_release)
+	LATEST_RELEASE=$(get_release)
 
 	export dnsadblock_INSTALLER=1
 
@@ -13,7 +13,7 @@ main() {
 	log_info "GOARCH: $GOARCH"
 	log_info "GOOS: $GOOS"
 	log_info "DNSADBLOCK_BIN: $DNSADBLOCK_BIN"
-   	log_info "LATEST_RELEASE: $LATEST_RELEASE"
+	log_info "LATEST_RELEASE: $LATEST_RELEASE"
 
 	if [ -z "$OS" ] || [ -z "$GOARCH" ] || [ -z "$GOOS" ] || [ -z "$DNSADBLOCK_BIN" ] || [ -z "$LATEST_RELEASE" ]; then
 		log_error "Cannot detect running environment."
@@ -55,12 +55,12 @@ install() {
 		if "install_$type"; then
 			if [ ! -x "$DNSADBLOCK_BIN" ]; then
 				log_error "Installation failed: binary not installed in $DNSADBLOCK_BIN"
-                		return 1
-            		fi
-            		configure
-					post_install
-            		exit 0
-        	fi
+				return 1
+			fi
+			configure
+			post_install
+			exit 0
+		fi
 	else
 		return $?
 	fi
@@ -90,7 +90,7 @@ configure() {
 	log_debug "Start configure"
 	args=""
 	add_arg() {
-		for value in $2; do 
+		for value in $2; do
 			log_debug "Add arg -$1=$value"
 			args="$args -$1=$value"
 		done
@@ -116,39 +116,37 @@ configure() {
 		;;
 	unsure)
 		doc "Accept DNS request from other network hosts."
-        if [ "$(get_config_bool setup-router)" = "true" ]; then
-            router_default=true
-        fi
-        if [ "$(ask_bool 'Setup as a router?' $router_default)" = "true" ]; then
-            add_arg setup-router true
-        fi
+		if [ "$(get_config_bool setup-router)" = "true" ]; then
+			router_default=true
+		fi
+		if [ "$(ask_bool 'Setup as a router?' $router_default)" = "true" ]; then
+			add_arg setup-router true
+		fi
 		;;
 	esac
 
-
 	doc "Make dnsadblock CLI cache responses. This improves latency and reduces the amount"
-    doc "of queries sent to our servers."
-    if [ "$(guess_host_type)" = "router" ]; then
-        doc "Note that enabling this feature will disable dnsmasq for DNS to avoid double"
-        doc "caching."
-    fi
-    if [ "$(get_config cache-size)" != "0" ]; then
-        cache_default=true
-    fi
-    if [ "$(ask_bool 'Enable caching?' $cache_default)" = "true" ]; then
-        add_arg cache-size "10MB"
+	doc "of queries sent to our servers."
+	if [ "$(guess_host_type)" = "router" ]; then
+		doc "Note that enabling this feature will disable dnsmasq for DNS to avoid double"
+		doc "caching."
+	fi
+	if [ "$(get_config cache-size)" != "0" ]; then
+		cache_default=true
+	fi
+	if [ "$(ask_bool 'Enable caching?' $cache_default)" = "true" ]; then
+		add_arg cache-size "10MB"
 
-        doc "Instant refresh will force low TTL on responses sent to clients so they rely"
-        doc "on CLI DNS cache. This will allow changes on your DnsAdblock config to be applied"
-        doc "on your LAN hosts without having to wait for their cache to expire."
-        if [ "$(get_config max-ttl)" = "5s" ]; then
-            instant_refresh_default=true
-        fi
-        if [ "$(ask_bool 'Enable instant refresh?' $instant_refresh_default)" = "true" ]; then
-            add_arg max-ttl "5s"
-        fi
-    fi
-
+		doc "Instant refresh will force low TTL on responses sent to clients so they rely"
+		doc "on CLI DNS cache. This will allow changes on your DnsAdblock config to be applied"
+		doc "on your LAN hosts without having to wait for their cache to expire."
+		if [ "$(get_config max-ttl)" = "5s" ]; then
+			instant_refresh_default=true
+		fi
+		if [ "$(ask_bool 'Enable instant refresh?' $instant_refresh_default)" = "true" ]; then
+			add_arg max-ttl "5s"
+		fi
+	fi
 
 	doc "Changes DNS settings of the host automatically when dnsadblock is started."
 	doc "If you say no here, you will have to manually configure DNS to 127.0.0.1."
@@ -160,29 +158,29 @@ configure() {
 }
 
 post_install() {
-    println
-    println "Congratulations! DnsAdBlock is now installed."
-    println
-    println "To upgrade/uninstall, run this command again and select the approriate option."
-    println
-    println "You can use the dnsadblock command to control the daemon."
-    println "Here is a few important commands to know:"
-    println
-    println "# Start, stop, restart the daemon:"
-    println "dnsadblock start"
-    println "dnsadblock stop"
-    println "dnsadblock restart"
-    println
-    println "# Configure the local host to point to dnsadblock or not:"
-    println "dnsadblock activate"
-    println "dnsadblock deactivate"
-    println
-    println "# Explore daemon logs:"
-    println "dnsadblock log"
-    println
-    println "# For more commands, use:"
-    println "dnsadblock help"
-    println
+	println
+	println "Congratulations! DnsAdBlock is now installed."
+	println
+	println "To upgrade/uninstall, run this command again and select the approriate option."
+	println
+	println "You can use the dnsadblock command to control the daemon."
+	println "Here is a few important commands to know:"
+	println
+	println "# Start, stop, restart the daemon:"
+	println "dnsadblock start"
+	println "dnsadblock stop"
+	println "dnsadblock restart"
+	println
+	println "# Configure the local host to point to dnsadblock or not:"
+	println "dnsadblock activate"
+	println "dnsadblock deactivate"
+	println
+	println "# Explore daemon logs:"
+	println "dnsadblock log"
+	println
+	println "# For more commands, use:"
+	println "dnsadblock help"
+	println
 }
 
 install_bin() {
@@ -228,25 +226,25 @@ uninstall_rpm() {
 }
 
 install_zypper() {
-    if asroot zypper repos | grep -q dnsadblock >/dev/null; then
-        echo "Repository dnsadblock already exists. Skipping adding repository..."
-    else
-        asroot zypper ar -f https://dl.bintray.com/dnsadblock/rpm/ dnsadblock
-    fi
-    asroot zypper refresh && asroot zypper in -y dnsadblock
+	if asroot zypper repos | grep -q dnsadblock >/dev/null; then
+		echo "Repository dnsadblock already exists. Skipping adding repository..."
+	else
+		asroot zypper ar -f https://dl.bintray.com/dnsadblock/rpm/ dnsadblock
+	fi
+	asroot zypper refresh && asroot zypper in -y dnsadblock
 }
 
 upgrade_zypper() {
-    asroot zypper up dnsadblock
+	asroot zypper up dnsadblock
 }
 
 uninstall_zypper() {
-    asroot zypper remove -y dnsadblock
-    case $(ask_bool 'Do you want to remove the repository from the repositories list?' true) in
-            true)
-                asroot zypper removerepo dnsadblock
-                ;;
-        esac
+	asroot zypper remove -y dnsadblock
+	case $(ask_bool 'Do you want to remove the repository from the repositories list?' true) in
+	true)
+		asroot zypper removerepo dnsadblock
+		;;
+	esac
 }
 
 install_deb() {
@@ -417,15 +415,38 @@ uninstall_opnsense() {
 	uninstall_bin
 }
 
+ubios_install_source() {
+	echo "deb https://dnsadblock.com/repo/deb stable main" >/tmp/dnsadblock.list
+	podman cp /tmp/dnsadblock.list unifi-os:/etc/apt/sources.list.d/dnsadblock.list
+	rm -f /tmp/dnsadblock.list
+}
+
+install_ubios() {
+	ubios_install_source
+	podman exec unifi-os apt-get update
+	podman exec unifi-os apt-get install -y dnsadblock
+}
+
+upgrade_ubios() {
+	ubios_install_source
+	podman exec unifi-os apt-get update
+	podman exec unifi-os apt-get upgrade -y dnsadblock
+}
+
+uninstall_ubios() {
+	podman exec unifi-os apt-get remove -y dnsadblock
+}
+
 install_type() {
 	if [ "$FORCE_INSTALL_TYPE" ]; then
-	    echo "$FORCE_INSTALL_TYPE"; return 0
+		echo "$FORCE_INSTALL_TYPE"
+		return 0
 	fi
 	case $OS in
 	centos | fedora | rhel)
 		echo "rpm"
 		;;
-	debian|ubuntu|elementary|raspbian|linuxmint|pop)
+	debian | ubuntu | elementary | raspbian | linuxmint | pop)
 		echo "deb"
 		;;
 	arch | manjaro)
@@ -437,21 +458,21 @@ install_type() {
 		. /etc/os-release
 		major=$(echo "$VERSION_ID" | cut -d. -f1)
 		case $major in
-		    *[!0-9]*)
+		*[!0-9]*)
 			if [ "$VERSION_ID" = "19.07.0-rc1" ]; then
-			    # No opkg support before 19.07.0-rc2
-			    echo "bin"
+				# No opkg support before 19.07.0-rc2
+				echo "bin"
 			else
-			    # Likely 'snapshot' bulid in this case, but still > major version 19
-			    echo "openwrt"
+				# Likely 'snapshot' bulid in this case, but still > major version 19
+				echo "openwrt"
 			fi
 			;;
-		    *)
+		*)
 			if [ "$major" -lt 19 ]; then
-			    # No opkg support before 19.07.0-rc2
-			    echo "bin"
+				# No opkg support before 19.07.0-rc2
+				echo "bin"
 			else
-			    echo "openwrt"
+				echo "openwrt"
 			fi
 			;;
 		esac
@@ -459,7 +480,7 @@ install_type() {
 	asuswrt-merlin)
 		echo "merlin"
 		;;
-	edgeos|synology|clear-linux-os|solus|openbsd|netbsd|overthebox)
+	edgeos | synology | clear-linux-os | solus | openbsd | netbsd | overthebox)
 		echo "bin"
 		;;
 	ddwrt)
@@ -483,8 +504,8 @@ install_type() {
 		echo "opnsense"
 		;;
 	ubios)
-        echo "bin"
-        ;;
+		echo "bin"
+		;;
 	*)
 		log_error "Unsupported installation for $(detect_os)"
 		return 1
@@ -551,21 +572,21 @@ log_error() {
 }
 
 print() {
-    format=$1
-    if [ $# -gt 0 ]; then
-        shift
-    fi
-    # shellcheck disable=SC2059
-    printf "$format" "$@" >&2
+	format=$1
+	if [ $# -gt 0 ]; then
+		shift
+	fi
+	# shellcheck disable=SC2059
+	printf "$format" "$@" >&2
 }
 
 println() {
-    format=$1
-    if [ $# -gt 0 ]; then
-        shift
-    fi
-    # shellcheck disable=SC2059
-    printf "$format\n" "$@" >&2
+	format=$1
+	if [ $# -gt 0 ]; then
+		shift
+	fi
+	# shellcheck disable=SC2059
+	printf "$format\n" "$@" >&2
 }
 
 doc() {
@@ -775,7 +796,7 @@ detect_os() {
 	Linux)
 		case $(uname -o) in
 		GNU/Linux)
-			if grep -q -e '^EdgeRouter' -e '^UniFiSecurityGateway' /etc/version 2> /dev/null; then
+			if grep -q -e '^EdgeRouter' -e '^UniFiSecurityGateway' /etc/version 2>/dev/null; then
 				echo "edgeos"
 				return 0
 			fi
@@ -789,7 +810,7 @@ detect_os() {
 				echo "$ID"
 			)
 			case $dist in
-			debian|ubuntu|elementary|raspbian|centos|fedora|rhel|arch|manjaro|openwrt|clear-linux-os|linuxmint|opensuse-tumbleweed|opensuse|solus|pop|neon|overthebox|ubios)
+			debian | ubuntu | elementary | raspbian | centos | fedora | rhel | arch | manjaro | openwrt | clear-linux-os | linuxmint | opensuse-tumbleweed | opensuse | solus | pop | neon | overthebox | ubios)
 				echo "$dist"
 				return 0
 				;;
@@ -821,7 +842,8 @@ detect_os() {
 		if [ -x /usr/local/sbin/opnsense-version ]; then
 			case $(/usr/local/sbin/opnsense-version -N) in
 			OPNsense)
-				echo "opnsense"; return 0
+				echo "opnsense"
+				return 0
 				;;
 			esac
 		fi
@@ -840,15 +862,15 @@ detect_os() {
 
 guess_host_type() {
 	case $OS in
-	pfsense|opnsense|openwrt|asuswrt-merlin|edgeos|ddwrt|synology|overthebox)
-        echo "router"
-        ;;
-    darwin)
-        echo "workstation"
-        ;;
-    *)
-        echo "unsure"
-        ;;
+	pfsense | opnsense | openwrt | asuswrt-merlin | edgeos | ddwrt | synology | overthebox)
+		echo "router"
+		;;
+	darwin)
+		echo "workstation"
+		;;
+	*)
+		echo "unsure"
+		;;
 	esac
 }
 
@@ -878,27 +900,27 @@ silent_exec() {
 
 bin_location() {
 	case $OS in
-	centos|fedora|rhel|debian|ubuntu|elementary|raspbian|arch|manjaro|clear-linux-os|linuxmint|opensuse-tumbleweed|opensuse|solus|pop)
+	centos | fedora | rhel | debian | ubuntu | elementary | raspbian | arch | manjaro | clear-linux-os | linuxmint | opensuse-tumbleweed | opensuse | solus | pop)
 		echo "/usr/bin/dnsadblock"
 		;;
-	openwrt|overthebox)
-        	echo "/usr/sbin/dnsadblock"
-        	;;
-	darwin|synology)
+	openwrt | overthebox)
+		echo "/usr/sbin/dnsadblock"
+		;;
+	darwin | synology)
 		echo "/usr/local/bin/dnsadblock"
 		;;
-	asuswrt-merlin|ddwrt)
+	asuswrt-merlin | ddwrt)
 		echo "/jffs/dnsadblock/dnsadblock"
 		;;
-	freebsd|pfsense|opnsense|netbsd|openbsd)
+	freebsd | pfsense | opnsense | netbsd | openbsd)
 		echo "/usr/local/sbin/dnsadblock"
 		;;
 	edgeos)
 		echo "/config/dnsadblock/dnsadblock"
 		;;
 	ubios)
-        echo "/data/dnsadblock"
-        ;;
+		echo "/data/dnsadblock"
+		;;
 	*)
 		log_error "Unknown bin location for $OS"
 		;;
