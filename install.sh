@@ -228,8 +228,11 @@ uninstall_rpm() {
 }
 
 install_zypper() {
-    asroot zypper repos | grep -q dnsadblock >/dev/null && 
-        echo "Repository dnsadblock already exists. Skipping adding repository..." || asroot zypper ar -f https://dl.bintray.com/dnsadblock/rpm/ dnsadblock 
+    if asroot zypper repos | grep -q dnsadblock >/dev/null; then
+        echo "Repository dnsadblock already exists. Skipping adding repository..."
+    else
+        asroot zypper ar -f https://dl.bintray.com/dnsadblock/rpm/ dnsadblock
+    fi
     asroot zypper refresh && asroot zypper in -y dnsadblock
 }
 
