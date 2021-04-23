@@ -903,7 +903,7 @@ get_release() {
 	if [ "$dnsadblock_VERSION" ]; then
 		echo "$dnsadblock_VERSION"
 	else
-		curl="curl -s"
+		curl="curl -A curl -s"
 		if [ -z "$(command -v curl 2>/dev/null)" ]; then
 			curl="openssl_get"
 		fi
