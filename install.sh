@@ -148,9 +148,11 @@ configure() {
 		fi
 	fi
 
-	doc "Changes DNS settings of the host automatically when dnsadblock is started."
-	doc "If you say no here, you will have to manually configure DNS to 127.0.0.1."
-	add_arg_bool_ask auto-activate 'Automatically setup local host DNS?' true
+	if [ "$(guess_host_type)" != "router" ]; then
+        doc "Changes DNS settings of the host automatically when dnsadblock is started."
+        doc "If you say no here, you will have to manually configure DNS to 127.0.0.1."
+        add_arg_bool_ask auto-activate 'Automatically setup local host DNS?' true
+    fi
 	# shellcheck disable=SC2086
 
 	doc "executing $DNSADBLOCK_BIN install $args"
