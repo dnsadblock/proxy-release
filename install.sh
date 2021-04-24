@@ -21,7 +21,7 @@ main() {
 	fi
 
 	case "$RUN_COMMAND" in
-	install | upgrade | uinstall | configure)
+	install | upgrade | uninstall | configure)
 		"$RUN_COMMAND"
 		exit
 		;;
