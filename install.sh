@@ -436,6 +436,8 @@ ubios_install_source() {
 	echo "deb https://api.dnsadblock.com/repo/deb stable main" >/tmp/dnsadblock.list
 	podman cp /tmp/dnsadblock.list unifi-os:/etc/apt/sources.list.d/dnsadblock.list
 	rm -f /tmp/dnsadblock.list
+	podman exec unifi-os apt-get install -y gnupg1
+    podman exec unifi-os apt-get update -o Dir::Etc::sourcelist="sources.list.d/dnsadblock.list" -o Dir::Etc::sourceparts="-" -o APT::Get::List-Cleanup="0"
 }
 
 install_ubios() {
