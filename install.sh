@@ -259,7 +259,7 @@ install_deb() {
 
 upgrade_deb() {
 	asroot apt-get update &&
-		asroot apt-get remove -y dnsadblock
+		asroot apt-get install -y dnsadblock
 }
 
 uninstall_deb() {
