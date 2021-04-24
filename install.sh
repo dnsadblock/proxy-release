@@ -149,10 +149,10 @@ configure() {
 	fi
 
 	if [ "$(guess_host_type)" != "router" ]; then
-        doc "Changes DNS settings of the host automatically when dnsadblock is started."
-        doc "If you say no here, you will have to manually configure DNS to 127.0.0.1."
-        add_arg_bool_ask auto-activate 'Automatically setup local host DNS?' true
-    fi
+		doc "Changes DNS settings of the host automatically when dnsadblock is started."
+		doc "If you say no here, you will have to manually configure DNS to 127.0.0.1."
+		add_arg_bool_ask auto-activate 'Automatically setup local host DNS?' true
+	fi
 	# shellcheck disable=SC2086
 
 	doc "executing $DNSADBLOCK_BIN install $args"
@@ -448,7 +448,7 @@ install_type() {
 	centos | fedora | rhel)
 		echo "rpm"
 		;;
-	debian | ubuntu | elementary | raspbian | linuxmint | pop)
+	debian | ubuntu | elementary | raspbian | linuxmint | pop | neon | sparky)
 		echo "deb"
 		;;
 	arch | manjaro)
@@ -813,13 +813,14 @@ detect_os() {
 			)
 			case $dist in
 			ubios)
-                if [ -z "$(command -v podman)" ]; then
-                    log_error "This version of UnifiOS is not supported. Make sure you run version 1.7.0 or above."
-                    return 1
-                fi
-                echo "$dist"; return 0
-                ;;
-            debian|ubuntu|elementary|raspbian|centos|fedora|rhel|arch|manjaro|openwrt|clear-linux-os|linuxmint|opensuse-tumbleweed|opensuse|solus|pop|neon|overthebox)
+				if [ -z "$(command -v podman)" ]; then
+					log_error "This version of UnifiOS is not supported. Make sure you run version 1.7.0 or above."
+					return 1
+				fi
+				echo "$dist"
+				return 0
+				;;
+			debian | ubuntu | elementary | raspbian | centos | fedora | rhel | arch | manjaro | openwrt | clear-linux-os | linuxmint | opensuse-tumbleweed | opensuse | solus | pop | neon | overthebox | sparky)
 				echo "$dist"
 				return 0
 				;;
@@ -909,7 +910,7 @@ silent_exec() {
 
 bin_location() {
 	case $OS in
-	centos | fedora | rhel | debian | ubuntu | elementary | raspbian | arch | manjaro | clear-linux-os | linuxmint | opensuse-tumbleweed | opensuse | solus | pop)
+	centos | fedora | rhel | debian | ubuntu | elementary | raspbian | arch | manjaro | clear-linux-os | linuxmint | opensuse-tumbleweed | opensuse | solus | pop | neon | sparky)
 		echo "/usr/bin/dnsadblock"
 		;;
 	openwrt | overthebox)
