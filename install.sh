@@ -446,8 +446,7 @@ install_ubios() {
 
 upgrade_ubios() {
 	ubios_install_source
-	podman exec unifi-os apt-get update
-	podman exec unifi-os apt-get upgrade -y dnsadblock
+	podman exec unifi-os apt-get install --only-upgrade -y dnsadblock
 }
 
 uninstall_ubios() {
