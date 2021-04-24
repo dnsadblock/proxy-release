@@ -810,7 +810,14 @@ detect_os() {
 				echo "$ID"
 			)
 			case $dist in
-			debian | ubuntu | elementary | raspbian | centos | fedora | rhel | arch | manjaro | openwrt | clear-linux-os | linuxmint | opensuse-tumbleweed | opensuse | solus | pop | neon | overthebox | ubios)
+			ubios)
+                if [ -z "$(command -v podman)" ]; then
+                    log_error "This version of UnifiOS is not supported. Make sure you run version 1.7.0 or above."
+                    return 1
+                fi
+                echo "$dist"; return 0
+                ;;
+            debian|ubuntu|elementary|raspbian|centos|fedora|rhel|arch|manjaro|openwrt|clear-linux-os|linuxmint|opensuse-tumbleweed|opensuse|solus|pop|neon|overthebox)
 				echo "$dist"
 				return 0
 				;;
