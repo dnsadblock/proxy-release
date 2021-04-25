@@ -967,7 +967,9 @@ get_release() {
 		echo "$dnsadblock_VERSION"
 	else
 		for cmd in curl wget openssl true; do
-			! command -v $cmd >/dev/null 2>/dev/null || break
+			# command is the "right" way but may be compiled out of busybox shell
+            ! command -v $cmd > /dev/null 2>&1 || break
+            ! which $cmd > /dev/null 2>&1 || break
 		done
 		case "$cmd" in
 		curl) cmd="curl -A curl -s" ;;
