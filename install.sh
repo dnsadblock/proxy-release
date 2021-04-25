@@ -239,7 +239,7 @@ upgrade_rpm() {
 }
 
 uninstall_rpm() {
-	asroot yum uninstall -y dnsadblock
+	asroot yum remove -y dnsadblock
 }
 
 install_zypper() {
