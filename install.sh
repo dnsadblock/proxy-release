@@ -437,7 +437,7 @@ ubios_install_source() {
 	podman cp /tmp/dnsadblock.list unifi-os:/etc/apt/sources.list.d/dnsadblock.list
 	rm -f /tmp/dnsadblock.list
 	podman exec unifi-os apt-get install -y gnupg1
-    podman exec unifi-os apt-get update -o Dir::Etc::sourcelist="sources.list.d/dnsadblock.list" -o Dir::Etc::sourceparts="-" -o APT::Get::List-Cleanup="0"
+	podman exec unifi-os apt-get update -o Dir::Etc::sourcelist="sources.list.d/dnsadblock.list" -o Dir::Etc::sourceparts="-" -o APT::Get::List-Cleanup="0"
 }
 
 install_ubios() {
@@ -463,6 +463,9 @@ install_type() {
 	case $OS in
 	centos | fedora | rhel)
 		echo "rpm"
+		;;
+	opensuse-tumbleweed | opensuse-leap | opensuse)
+		echo "zypper"
 		;;
 	debian | ubuntu | elementary | raspbian | linuxmint | pop | neon | sparky | vyos)
 		echo "deb"
@@ -836,7 +839,7 @@ detect_os() {
 				echo "$dist"
 				return 0
 				;;
-			debian | ubuntu | elementary | raspbian | centos | fedora | rhel | arch | manjaro | openwrt | clear-linux-os | linuxmint | opensuse-tumbleweed | opensuse | solus | pop | neon | overthebox | sparky | vyos)
+			debian | ubuntu | elementary | raspbian | centos | fedora | rhel | arch | manjaro | openwrt | clear-linux-os | linuxmint | opensuse-tumbleweed | opensuse-leap | opensuse | solus | pop | neon | overthebox | sparky | vyos)
 				echo "$dist"
 				return 0
 				;;
@@ -926,7 +929,7 @@ silent_exec() {
 
 bin_location() {
 	case $OS in
-	centos | fedora | rhel | debian | ubuntu | elementary | raspbian | arch | manjaro | clear-linux-os | linuxmint | opensuse-tumbleweed | opensuse | solus | pop | neon | sparky | vyos)
+	centos | fedora | rhel | debian | ubuntu | elementary | raspbian | arch | manjaro | clear-linux-os | linuxmint | opensuse-tumbleweed | opensuse-leap | opensuse | solus | pop | neon | sparky | vyos)
 		echo "/usr/bin/dnsadblock"
 		;;
 	openwrt | overthebox)
@@ -964,23 +967,23 @@ get_release() {
 		echo "$dnsadblock_VERSION"
 	else
 		for cmd in curl wget openssl true; do
-            ! command -v $cmd > /dev/null 2> /dev/null || break
-        done
-        case "$cmd" in
-        curl) cmd="curl -A curl -s" ;;
-        wget) cmd="wget -qO- -U curl" ;;
-        openssl) cmd="openssl_get" ;;
-        *)
-            log_error "Cannot retrieve latest version"
-            return
-            ;;
-        esac
-        out=$($cmd "https://api.github.com/repos/dnsadblock/proxy-release/releases/latest")
-        v=$(echo "$out" | grep '"tag_name":' | esed 's/.*"([^"]+)".*/\1/' | sed -e 's/^v//')
-        if [ -z "$v" ]; then
-            log_error "Cannot get latest version: $out"
-        fi
-        echo "$v"
+			! command -v $cmd >/dev/null 2>/dev/null || break
+		done
+		case "$cmd" in
+		curl) cmd="curl -A curl -s" ;;
+		wget) cmd="wget -qO- -U curl" ;;
+		openssl) cmd="openssl_get" ;;
+		*)
+			log_error "Cannot retrieve latest version"
+			return
+			;;
+		esac
+		out=$($cmd "https://api.github.com/repos/dnsadblock/proxy-release/releases/latest")
+		v=$(echo "$out" | grep '"tag_name":' | esed 's/.*"([^"]+)".*/\1/' | sed -e 's/^v//')
+		if [ -z "$v" ]; then
+			log_error "Cannot get latest version: $out"
+		fi
+		echo "$v"
 	fi
 }
 
