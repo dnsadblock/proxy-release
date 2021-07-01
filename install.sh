@@ -1014,8 +1014,8 @@ get_release() {
 			return
 			;;
 		esac
-		out=$($cmd "https://api.github.com/repos/dnsadblock/proxy-release/releases/latest")
-		v=$(echo "$out" | grep '"tag_name":' | esed 's/.*"([^"]+)".*/\1/' | sed -e 's/^v//')
+		v=$($cmd "https://api.github.com/repos/dnsadblock/proxy-release/releases/latest" | \
+            grep '"tag_name":' | esed 's/.*"([^"]+)".*/\1/' | sed -e 's/^v//')
 		if [ -z "$v" ]; then
 			log_error "Cannot get latest version: $out"
 		fi
