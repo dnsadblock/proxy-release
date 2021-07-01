@@ -269,6 +269,22 @@ uninstall_deb() {
 	asroot apt-get upgrade -y dnsadblock
 }
 
+install_alpine() {
+    repo=https://repo.dnsadblock.com/apk
+    asroot curl -o /etc/apk/keys/dnsadblock.pub https://repo.dnsadblock.com/dnsadblock.pub &&
+        (grep -v $repo /etc/apk/repositories; echo $repo) | asroot tee /etc/apk/repositories >/dev/null &&
+        asroot apk update &&
+        asroot apk add dnsadblock
+}
+
+upgrade_alpine() {
+    asroot apk update && asroot apk upgrade nextdns
+}
+
+uninstall_alpine() {
+    asroot apk del nextdns
+}
+
 install_arch() {
 	asroot pacman -Sy yay &&
 		yay -Sy dnsadblock
@@ -786,7 +802,7 @@ detect_os() {
 				echo "$ID"
 			)
 			case $dist in
-			debian|ubuntu|elementary|raspbian|centos|fedora|rhel|arch|manjaro|openwrt|clear-linux-os|linuxmint|opensuse-tumbleweed|opensuse|solus|pop|neon|overthebox)
+			debian|ubuntu|elementary|raspbian|centos|fedora|rhel|arch|manjaro|openwrt|clear-linux-os|linuxmint|opensuse-tumbleweed|opensuse-leap|opensuse|solus|pop|neon|overthebox|sparky|vyos|void|alpine)
 				echo "$dist"
 				return 0
 				;;
@@ -875,7 +891,7 @@ silent_exec() {
 
 bin_location() {
 	case $OS in
-	centos|fedora|rhel|debian|ubuntu|elementary|raspbian|arch|manjaro|clear-linux-os|linuxmint|opensuse-tumbleweed|opensuse|solus|pop)
+	centos|fedora|rhel|debian|ubuntu|elementary|raspbian|arch|manjaro|clear-linux-os|linuxmint|opensuse-tumbleweed|opensuse-leap|opensuse|solus|pop|neon|sparky|vyos|void|alpine)
 		echo "/usr/bin/dnsadblock"
 		;;
 	openwrt|overthebox)
