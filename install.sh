@@ -284,19 +284,19 @@ uninstall_deb() {
 	asroot apt-get upgrade -y dnsadblock
 }
 
-install_alpine() {
+install_apk() {
     repo=https://repo.dnsadblock.com/apk
-    asroot curl -o /etc/apk/keys/dnsadblock.pub https://repo.dnsadblock.com/dnsadblock.pub &&
+    asroot wget -O /etc/apk/keys/dnsadblock.pub https://repo.dnsadblock.com/dnsadblock.pub &&
         (grep -v $repo /etc/apk/repositories; echo $repo) | asroot tee /etc/apk/repositories >/dev/null &&
         asroot apk update &&
         asroot apk add dnsadblock
 }
 
-upgrade_alpine() {
+upgrade_apk() {
     asroot apk update && asroot apk upgrade dnsadblock
 }
 
-uninstall_alpine() {
+uninstall_apk() {
     asroot apk del dnsadblock
 }
 
@@ -486,6 +486,9 @@ install_type() {
 	debian | ubuntu | elementary | raspbian | linuxmint | pop | neon | sparky | vyos)
 		echo "deb"
 		;;
+	alpine)
+        echo "apk"
+        ;;
 	arch | manjaro)
 		#echo "arch" # TODO: fix AUR install
 		echo "bin"
@@ -832,7 +835,7 @@ detect_os() {
 	case $(uname -s) in
 	Linux)
 		case $(uname -o) in
-		GNU/Linux)
+		GNU/Linux|Linux)
 			if grep -q -e '^EdgeRouter' -e '^UniFiSecurityGateway' /etc/version 2>/dev/null; then
 				echo "edgeos"
 				return 0
@@ -901,7 +904,7 @@ detect_os() {
 		;;
 	*) ;;
 	esac
-	log_error "Unsupported OS: $(uname -s)"
+	log_error "Unsupported OS: $(uname -o) $(grep ID "/etc/os-release" 2>/dev/null | xargs)"
 	return 1
 }
 
