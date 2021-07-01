@@ -293,11 +293,11 @@ install_alpine() {
 }
 
 upgrade_alpine() {
-    asroot apk update && asroot apk upgrade nextdns
+    asroot apk update && asroot apk upgrade dnsadblock
 }
 
 uninstall_alpine() {
-    asroot apk del nextdns
+    asroot apk del dnsadblock
 }
 
 install_arch() {
