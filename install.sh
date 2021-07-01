@@ -284,6 +284,22 @@ uninstall_deb() {
 	asroot apt-get upgrade -y dnsadblock
 }
 
+install_alpine() {
+    repo=https://repo.dnsadblock.com/apk
+    asroot curl -o /etc/apk/keys/dnsadblock.pub https://repo.dnsadblock.com/dnsadblock.pub &&
+        (grep -v $repo /etc/apk/repositories; echo $repo) | asroot tee /etc/apk/repositories >/dev/null &&
+        asroot apk update &&
+        asroot apk add dnsadblock
+}
+
+upgrade_alpine() {
+    asroot apk update && asroot apk upgrade nextdns
+}
+
+uninstall_alpine() {
+    asroot apk del nextdns
+}
+
 install_arch() {
 	asroot pacman -Sy yay &&
 		yay -Sy dnsadblock
@@ -831,19 +847,19 @@ detect_os() {
 				echo "$ID"
 			)
 			case $dist in
-			ubios)
-				if [ -z "$(command -v podman)" ]; then
-					log_error "This version of UnifiOS is not supported. Make sure you run version 1.7.0 or above."
-					return 1
-				fi
-				echo "$dist"
-				return 0
-				;;
-			debian | ubuntu | elementary | raspbian | centos | fedora | rhel | arch | manjaro | openwrt | clear-linux-os | linuxmint | opensuse-tumbleweed | opensuse-leap | opensuse | solus | pop | neon | overthebox | sparky | vyos)
+			debian|ubuntu|elementary|raspbian|centos|fedora|rhel|arch|manjaro|openwrt|clear-linux-os|linuxmint|opensuse-tumbleweed|opensuse-leap|opensuse|solus|pop|neon|overthebox|sparky|vyos|void|alpine)
 				echo "$dist"
 				return 0
 				;;
 			esac
+			# shellcheck disable=SC1091
+			for dist in $(. /etc/os-release; echo "$ID_LIKE"); do
+				case $dist in debian|ubuntu|rhel|fedora)
+					log_debug "Using ID_LIKE"
+					echo "$dist"; return 0
+					;;
+				esac
+			done
 			;;
 		ASUSWRT-Merlin*)
 			echo "asuswrt-merlin"
@@ -929,7 +945,11 @@ silent_exec() {
 
 bin_location() {
 	case $OS in
+<<<<<<< HEAD
 	centos | fedora | rhel | debian | ubuntu | elementary | raspbian | arch | manjaro | clear-linux-os | linuxmint | opensuse-tumbleweed | opensuse-leap | opensuse | solus | pop | neon | sparky | vyos)
+=======
+	centos|fedora|rhel|debian|ubuntu|elementary|raspbian|arch|manjaro|clear-linux-os|linuxmint|opensuse-tumbleweed|opensuse-leap|opensuse|solus|pop|neon|sparky|vyos|void|alpine)
+>>>>>>> fab38a69ab380ae3ca6172eee1d5a025078e0062
 		echo "/usr/bin/dnsadblock"
 		;;
 	openwrt | overthebox)
